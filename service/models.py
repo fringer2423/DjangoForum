@@ -1,8 +1,8 @@
 from django.db import models
 from django.urls import reverse, reverse_lazy
 
-class Post(models.Model):
 
+class Post(models.Model):
     title = models.CharField(verbose_name='Название', max_length=100)
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     image = models.ImageField(verbose_name='Картинка', null=True, blank=True)

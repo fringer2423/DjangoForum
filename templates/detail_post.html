@@ -14,8 +14,10 @@
 
     <hr>
     <a href="{% url 'add_comment' post.pk %}" class="btn btn-outline-success">Add comment</a>
-    <a href="{% url 'update_post' post.pk %}" class="btn btn-outline-primary">Edit</a>
-    <a href="{% url 'delete_post' post.pk %}" class="btn btn-outline-danger">Delete</a>
+    {% if user.is_superuser %}
+        <a href="{% url 'update_post' post.pk %}" class="btn btn-outline-primary">Edit</a>
+        <a href="{% url 'delete_post' post.pk %}" class="btn btn-outline-danger">Delete</a>
+    {% endif %}
     <hr>
     {% if post.comments.all %}
         <h4>Comments</h4>
