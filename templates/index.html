@@ -15,32 +15,38 @@
     {% block content %}
         <h1>Forum</h1>
         <br>
-        <a href="{% url 'create_post' %}" class="btn btn-outline-info">Create new post</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'create_post' %}" class="btn btn-outline-info">Create new post</a>
+            <br>
+            <br>
+        {% endif %}
         {% if object_list %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Title</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Created At</th>
-                    <th scope="col">Updated At</th>
-                    <th scope="col">Edit</th>
-                    <th scope="col">Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for post in object_list %}
-                    <tr>
-                        <td><a href="{% url 'detail_post' post.pk %}" class="btn btn-light btn-sm">{{ post.title }}</a></td>
-                        <td>{{ post.description }}</td>
-                        <td>{{ post.created_at }}</td>
-                        <td>{{ post.updated_at }}</td>
-                        <td><a href="{% url 'update_post' post.pk %}" class="btn btn-outline-primary btn-sm">Edit</a></td>
-                        <td><a href="{% url 'delete_post' post.pk %}" class="btn btn-outline-danger btn-sm">Delete</a></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {% for post in object_list %}
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">{{ post.title }}</h4>
+                    <p>{{ post.description }}</p>
+                    <hr>
+                    <div class="container">
+                        <div class="row align-items-start">
+                            <div class="col">
+                                <small class="text-nuted">
+                                    {{ post.updated_at }}
+                                </small>
+                            </div>
+                            {% if user.is_authenticated %}
+                                <div class="col text-end">
+                                    <a href="{% url 'detail_post' post.pk %}"
+                                       class="btn btn-outline-secondary btn-sm">Read more</a>
+                                    <a href="{% url 'update_post' post.pk %}"
+                                       class="btn btn-outline-primary btn-sm">Edit</a>
+                                    <a href="{% url 'delete_post' post.pk %}"
+                                       class="btn btn-outline-danger btn-sm text-end">Delete</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         {% else %}
             <p> No posts </p>
         {% endif %}
