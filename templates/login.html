@@ -1,11 +1,12 @@
 {% extends 'index.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-    <h1>Create post</h1>
-    <form method="POST" enctype="multipart/form-data">
+    <h1>Login</h1>
+    <form method="POST" class="form-singin">
         {% csrf_token %}
-        {{ form.as_p }}
-
+        {{ form|crispy }}
+        <br>
         <button class="btn btn-outline-success">Success</button>
     </form>
 {% endblock %}

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from service.models import Post, Comment
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import PostForm, CommentForm
+from .forms import PostForm, CommentForm, UserRegisterForm
 from django.urls import reverse_lazy
+from django.contrib.auth.forms import UserCreationForm
 
 
 def index(request):
@@ -50,3 +51,9 @@ class AddComment(CreateView):
     def form_valid(self, form):
         form.instance.post_id = self.kwargs['pk']
         return super().form_valid(form)
+
+
+class Register(CreateView):
+    form_class = UserRegisterForm
+    template_name = "register.html"
+    success_url = reverse_lazy('login')
