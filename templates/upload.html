@@ -1,0 +1,31 @@
+{% extends 'index.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>Upload file</h1>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">Choose file</label>
+        <input type="file" name="file">
+        <br>
+        <br>
+        <button class="btn btn-outline-success">Success</button>
+    </form>
+    <hr>
+    {% if url %}
+        <a href="{{ url }}" class="btn btn-link">{{ url }}</a>
+    {% endif %}
+{% endblock %}

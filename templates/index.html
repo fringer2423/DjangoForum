@@ -31,6 +31,8 @@
         {% if user.is_authenticated %}
             {% if user.is_superuser %}
                 <a href="{% url 'create_post' %}" class="btn btn-outline-info">Create new post</a>
+                <a href="{% url 'upload' %}" class="btn btn-outline-secondary">Upload file</a>
+                <a href="{% url 'download' %}" class="btn btn-outline-secondary">Download file</a>
                 <br>
                 <br>
             {% endif %}

@@ -1,3 +1,7 @@
+import csv
+import io
+import datetime
+
 from django.shortcuts import render, redirect
 from service.models import Post, Comment
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -9,6 +13,8 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
 
 
 def index(request):
@@ -100,3 +106,26 @@ class Register(SuccessMessageMixin, CreateView):
     success_message = "%(username)s was created successfully"
     template_name = "register.html"
     success_url = reverse_lazy('login')
+
+
+def upload(request):
+    context = {}
+    if request.method == "POST":
+        uploaded_file = request.FILES['file']
+        file = FileSystemStorage()
+        name = file.save(uploaded_file.name, uploaded_file)
+        messages.success(request, f"Upload file successfully")
+        context['url'] = file.url(name)
+    return render(request, 'upload.html', context)
+
+
+def download(request):
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response)
+    writer.writerow(["Title", "Description", "Created_at"])
+
+    for row in Post.objects.all().values_list('title', 'description', 'created_at'):
+        writer.writerow(row)
+    filename = str(datetime.datetime.now())
+    response["Content-Disposition"] = f"attachment; filename={filename} posts.csv"
+    return response
