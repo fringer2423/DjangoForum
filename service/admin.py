@@ -1,5 +1,5 @@
 from django.contrib import admin
-from service.models import Post, Comment
+from service.models import Post, Comment, Message
 
 
 @admin.register(Post)
@@ -10,3 +10,8 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ['description', 'created_at']
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ['title', 'body']

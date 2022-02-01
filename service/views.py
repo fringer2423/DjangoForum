@@ -1,20 +1,35 @@
 from django.shortcuts import render, redirect
 from service.models import Post, Comment
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import PostForm, CommentForm, UserRegisterForm
+from .forms import PostForm, CommentForm, UserRegisterForm, MessageForm
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def index(request):
     return render(request, 'index.html')
 
 
-@login_required
-@permission_required('service.view_post')
 def about(request):
-    return render(request, 'about.html')
+    form = MessageForm
+    if request.method == "POST":
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data.get("title")
+            body = form.cleaned_data.get("body")
+            try:
+                send_mail(subject, body, settings.EMAIL_HOST_USER, ["wosager711@afarek.com"], fail_silently=False)
+                form.save()
+                messages.success(request, f"Message sent successfully")
+            except Exception as err:
+                print(str(err))
+            return redirect('index')
+    return render(request, 'about.html', {"form": form})
 
 
 class PostsView(ListView):
@@ -29,11 +44,28 @@ class DetailPostView(LoginRequiredMixin, DetailView):
     template_name = "detail_post.html"
 
 
-class CreatePostView(LoginRequiredMixin, CreateView):
-    login_url = 'login'
-    model = Post
-    template_name = "create_post.html"
-    form_class = PostForm
+# class CreatePostView(LoginRequiredMixin, CreateView):
+#    login_url = 'login'
+#    model = Post
+#    template_name = "create_post.html"
+#    form_class = PostForm
+
+
+@login_required
+def create_post(request):
+    form = PostForm
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            title = form.cleaned_data.get("title")
+            # id = form.cleaned_data.get("pk")
+            if title != "POST":
+                messages.error(request, f"Something went wrong")
+                return redirect('index')
+            messages.success(request, f"Post {title} was created successfully")
+            return redirect('index')
+    return render(request, "create_post.html", {"form": form})
 
 
 class UpdatePostView(PermissionRequiredMixin, UpdateView):
@@ -63,7 +95,8 @@ class AddComment(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class Register(CreateView):
+class Register(SuccessMessageMixin, CreateView):
     form_class = UserRegisterForm
+    success_message = "%(username)s was created successfully"
     template_name = "register.html"
     success_url = reverse_lazy('login')
