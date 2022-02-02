@@ -1,23 +1,28 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Checkbox
-from .serializers import CheckboxSerializers, UserSerializers, UserCreateSerializers
+from .serializers import CheckboxSerializers, UserSerializers, DataSerializers
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework import authentication, permissions
 from rest_framework import generics
+from .utils import Sum
 
 
-# class CheckboxViewset(viewsets.ModelViewSet):
-#     queryset = Checkbox.objects.all()
-#     serializer_class = CheckboxSerializers
+class CheckboxViewset(viewsets.ModelViewSet):
+    queryset = Checkbox.objects.all()
+    serializer_class = CheckboxSerializers
+
+    @action(detail=False, methods=["get"])
+    def limit(self, request, pk=None):
+        params = request.query_params
+        return Response({"result": params})
 
 
 class UserList(generics.ListCreateAPIView):
-
     queryset = User.objects.all()
     serializer_class = UserSerializers
 
@@ -84,3 +89,13 @@ def checkbox_delete(request, pk):
     checkbox = Checkbox.objects.get(id=pk)
     checkbox.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DataView(APIView):
+    @staticmethod
+    def get(request):
+        serializer = DataSerializers(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        result = Sum(serializer.validated_data).call()
+
+        return Response(result, status=status.HTTP_200_OK)
