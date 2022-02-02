@@ -4,4 +4,8 @@ class Sum:
         self.val_2 = params.get("val_2")
 
     def call(self):
-        return {"result ": self.val_1 + self.val_2}
+        return {
+            "result": self.val_1 + self.val_2,
+            "val_1": self.val_1,
+            "val_2": self.val_2,
+        }

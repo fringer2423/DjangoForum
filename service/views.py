@@ -5,7 +5,6 @@ import datetime
 from django.shortcuts import render, redirect
 from service.models import Post, Comment
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import PostForm, CommentForm, UserRegisterForm, MessageForm
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -15,6 +14,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
+from .forms import PostForm, CommentForm, UserRegisterForm, MessageForm
 
 
 def index(request):
@@ -29,7 +29,7 @@ def about(request):
             subject = form.cleaned_data.get("title")
             body = form.cleaned_data.get("body")
             try:
-                send_mail(subject, body, settings.EMAIL_HOST_USER, ["wosager711@afarek.com"], fail_silently=False)
+                send_mail(subject, body, settings.EMAIL_HOST_USER, ["example@mail.ru"], fail_silently=False)
                 form.save()
                 messages.success(request, f"Message sent successfully")
             except Exception as err:

@@ -4,7 +4,7 @@ from rest_framework import routers
 from .views import *
 
 router = routers.DefaultRouter()
-router.register('check', CheckboxViewset)
+router.register('checkbox', CheckboxViewset)
 
 urlpatterns = [
     path('', include(router.urls)),

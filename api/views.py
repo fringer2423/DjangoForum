@@ -1,15 +1,15 @@
-from django.shortcuts import render
-from rest_framework import viewsets
+import logging
+
+from rest_framework import viewsets, status, permissions, generics
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-from rest_framework import status
-from .models import Checkbox
-from .serializers import CheckboxSerializers, UserSerializers, DataSerializers
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
-from rest_framework import authentication, permissions
-from rest_framework import generics
+from .serializers import CheckboxSerializers, UserSerializers, DataSerializers
 from .utils import Sum
+from .models import Checkbox
+
+logger = logging.getLogger('django')
 
 
 class CheckboxViewset(viewsets.ModelViewSet):
@@ -18,7 +18,10 @@ class CheckboxViewset(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def limit(self, request, pk=None):
-        params = request.query_params
+        try:
+            params = request.query_params
+        except Exception as error:
+            logger.error('error :%s', error)
         return Response({"result": params})
 
 
